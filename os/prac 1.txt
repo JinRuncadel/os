@@ -1,0 +1,158 @@
+//fork
+#include <sys/types.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+int main(int argc, char *argv[])
+{
+  printf("I am: %d\n", (int) getpid());
+  pid_t pid = fork();
+  printf("fork returned: %d\n", (int) pid);
+  if (pid < 0)
+   {
+      perror("Fork failed");
+   }
+  if (pid == 0) 
+   {
+     printf("I am the child with pid %d\n", (int) getpid());
+     printf("Child process is exiting\n");
+     exit(0);
+   }
+  printf("I am the parent waiting for the child process to end\n");
+  wait(NULL);
+  printf("parent process is exiting\n");
+  return(0);
+} 
+
+//nice
+#include<stdio.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<stdlib.h>
+main()
+{
+ int pid, retnice;
+ printf("press DEL to stop process \n");
+ pid=fork();
+ for(;;)
+  {
+    if(pid == 0)
+     {
+      retnice = nice (-5);
+      printf("child gets higher CPU priority %d \n", retnice);
+      sleep(10);
+     }
+    else
+     {
+      retnice=nice(4);
+      printf("Parent gets lower CPU priority %d \n", retnice);
+      sleep(10);
+     }
+  }
+}
+
+//orphan
+#include<stdio.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<stdlib.h>
+void main()
+{
+int pid;
+pid=fork();
+printf("\n pid=%d",(int) pid);
+if(pid==0)
+{
+printf("\nBefore parent process terminated");
+printf("\nChild Process with id  %d,Parent Process with id  %d ",(int) getpid(),(int) getppid());
+sleep(1);
+printf("\nAfter parent process terminated");
+printf("\nOrphan Child Process with id %d,Parent Process with id %d",(int) getpid(),(int) getppid());
+printf("\n child is exiting");
+exit(0);
+}
+else
+{
+printf("\nI am parent process with id %d \n",(int) getpid());
+printf("\n Parent is exiting");
+exit(0);
+}
+}
+
+//sort
+#include<stdio.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<stdlib.h>
+void bubblesort(int arr[30],int n)
+{
+ int i,j,temp;
+ for(i=0;i<n;i++)
+  {
+  for(j=0;j<n-1;j++)
+   {
+    if(arr[j]>arr[j+1])
+     {
+	temp=arr[j];
+	rr[j]=arr[j+1];
+	arr[j+1]=temp;
+     }
+    }
+   }
+}
+void insertionsort(int arr[30], int n) 
+{  
+   int i, j, temp;  
+   for (i = 1; i < n; i++) 
+   {  
+    temp = arr[i];  
+    j = i - 1;  
+     while(j>=0 && temp <= arr[j]) 
+      {    
+       arr[j+1] = arr[j];     
+       j = j-1;    
+      }    
+    arr[j+1] = temp;    
+   }  
+}  
+void fork1()
+{
+ 	int arr[25],arr1[25],n,i,status;
+ 	printf("\nEnter the no of values in array :");
+ 	scanf("%d",&n);
+ 	printf("\nEnter the array elements :");
+ 	for(i=0;i<n;i++)
+    scanf("%d",&arr[i]);
+ 	int pid=fork();
+  	if(pid==0)
+   	{
+     sleep(10);
+     printf("\nchild process\n");
+     printf("child process id=%d\n",getpid());
+     insertionsort(arr,n);
+     printf("\nElements Sorted Using insertionsort:");
+     printf("\n");
+     for(i=0;i<n;i++)
+     printf("%d,",arr[i]);
+     printf("\b");
+     printf("\nparent process id=%d\n",getppid());
+     system("ps -x");
+    }    
+    else
+      {
+     	printf("\nparent process\n");
+     	printf("\nparent process id=%d\n",getppid());
+	 	bubblesort(arr,n);	      
+		printf("Elements Sorted Using bubblesort:");
+	    printf("\n");
+      	for(i=0;i<n;i++)
+    	printf("%d,",arr[i]);
+    	printf("\n\n\n"); 
+      } 
+ }     
+ int main()
+ {
+  fork1();
+  return 0;
+ }
